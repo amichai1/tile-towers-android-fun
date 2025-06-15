@@ -1,0 +1,26 @@
+
+// This file configures Capacitor modules and dependencies
+
+include ':capacitor-android'
+project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/android/capacitor')
+
+def capacitorPlugins = [:]
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+apply from: rootProject.file('../node_modules/@capacitor/android/capacitor.settings.gradle')
+def hasPlugins = capacitorPlugins.size() > 0
+
+if (hasPlugins) {
+    capacitorPlugins.each { pluginId, pluginObject ->
+        def pluginProjectName = pluginObject["name"]
+        def pluginProjectDir = pluginObject["path"]
+        include ":$pluginProjectName"
+        project(":$pluginProjectName").projectDir = new File(pluginProjectDir)
+    }
+}
