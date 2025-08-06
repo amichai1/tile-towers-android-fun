@@ -20,6 +20,12 @@ const Game = () => {
     const saved = localStorage.getItem('2048-best-score');
     return saved ? parseInt(saved) : 0;
   });
+  const [gameTime, setGameTime] = useState(0);
+  const [bestTime, setBestTime] = useState(() => {
+    const saved = localStorage.getItem('2048-best-time');
+    return saved ? parseInt(saved) : 0;
+  });
+  const [startTime, setStartTime] = useState(Date.now());
 
   const resetGame = () => {
     const newBoard = initializeBoard();
@@ -29,6 +35,8 @@ const Game = () => {
     setScore(0);
     setHasWon(false);
     setGameOver(false);
+    setGameTime(0);
+    setStartTime(Date.now());
   };
 
   const handleMove = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
@@ -50,6 +58,11 @@ const Game = () => {
     
     if (!hasWon && checkWin(newBoard)) {
       setHasWon(true);
+      const winTime = gameTime;
+      if (bestTime === 0 || winTime < bestTime) {
+        setBestTime(winTime);
+        localStorage.setItem('2048-best-time', winTime.toString());
+      }
     }
     
     setTimeout(() => {
@@ -85,9 +98,30 @@ const Game = () => {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [handleMove]);
 
+  useEffect(() => {
+    if (!gameOver && !hasWon) {
+      const timer = setInterval(() => {
+        setGameTime(Math.floor((Date.now() - startTime) / 1000));
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [startTime, gameOver, hasWon]);
+
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   return (
     <div className="flex flex-col items-center max-w-md mx-auto">
-      <GameHeader score={score} bestScore={bestScore} onReset={resetGame} />
+      <GameHeader 
+        score={score} 
+        bestScore={bestScore} 
+        gameTime={formatTime(gameTime)}
+        bestTime={bestTime > 0 ? formatTime(bestTime) : '--:--'}
+        onReset={resetGame} 
+      />
       <GameBoard board={board} onMove={handleMove} />
       <GameControls onMove={handleMove} />
       
@@ -95,7 +129,8 @@ const Game = () => {
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 text-center max-w-sm mx-4">
             <h2 className="text-3xl font-bold text-yellow-600 mb-4">🎉 ניצחת!</h2>
-            <p className="text-gray-700 mb-4">הגעת ל-2048!</p>
+            <p className="text-gray-700 mb-2">הגעת ל-2048!</p>
+            <p className="text-gray-700 mb-4">זמן: {formatTime(gameTime)}</p>
             <button
               onClick={() => setHasWon(false)}
               className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
