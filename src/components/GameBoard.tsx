@@ -21,7 +21,7 @@ const GameBoard = ({ board, onMove }: GameBoardProps) => {
 
       if (Math.abs(deltaX) > Math.abs(deltaY)) {
         if (Math.abs(deltaX) > minSwipeDistance) {
-          onMove(deltaX > 0 ? 'right' : 'left');
+          onMove(deltaX > 0 ? 'left' : 'right');
         }
       } else {
         if (Math.abs(deltaY) > minSwipeDistance) {
