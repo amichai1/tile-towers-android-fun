@@ -31,10 +31,10 @@ const GameTile = ({ value }: GameTileProps) => {
   return (
     <div
       className={`
-        w-16 h-16 rounded-lg flex items-center justify-center font-bold text-lg
+        w-12 h-12 rounded-lg flex items-center justify-center font-bold text-sm
         transform transition-all duration-150 ease-in-out
         ${getTileStyles(value)}
-        ${value >= 1024 ? 'text-sm' : ''}
+        ${value >= 1024 ? 'text-xs' : ''}
         ${value === 2048 ? 'animate-pulse' : ''}
       `}
     >

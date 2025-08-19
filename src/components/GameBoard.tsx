@@ -37,10 +37,10 @@ const GameBoard = ({ board, onMove }: GameBoardProps) => {
 
   return (
     <div 
-      className="bg-white bg-opacity-20 backdrop-blur-sm rounded-2xl p-4 shadow-2xl mb-6"
+      className="bg-white bg-opacity-20 backdrop-blur-sm rounded-2xl p-3 shadow-2xl mb-3"
       onTouchStart={handleTouchStart}
     >
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 gap-2">
         {board.map((row, rowIndex) =>
           row.map((value, colIndex) => (
             <GameTile
